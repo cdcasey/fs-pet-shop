@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.route('/pets')
     .get((request, response, next) => {
         const { headers, method, url } = request;
-        fs.readFile('./pets.json', 'utf8', (err, data) => {
+        fs.readFile(petsFile, 'utf8', (err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -38,7 +38,7 @@ app.route('/pets')
             response.set('Content-Type', 'text/plain');
             response.send(message);
         } else {
-            fs.readFile('./pets.json', (err, data) => {
+            fs.readFile(petsFile, (err, data) => {
                 if (err) {
                     next(err);
                 } else {
@@ -53,7 +53,7 @@ app.route('/pets')
 app.route('/pets/:id')
     .get((request, response, next) => {
         const { headers, method, url } = request;
-        fs.readFile('./pets.json', 'utf8', (err, data) => {
+        fs.readFile(petsFile, 'utf8', (err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -69,7 +69,7 @@ app.route('/pets/:id')
     })
     .delete((request, response, next) => {
         const { headers, method, url } = request;
-        fs.readFile('./pets.json', 'utf8', (err, data) => {
+        fs.readFile(petsFile, 'utf8', (err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -94,7 +94,7 @@ app.route('/pets/:id')
             response.set('Content-Type', 'text/plain');
             response.send(message);
         } else {
-            fs.readFile('./pets.json', (err, data) => {
+            fs.readFile(petsFile, (err, data) => {
                 if (err) {
                     next(err);
                 } else {
