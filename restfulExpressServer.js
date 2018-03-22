@@ -6,6 +6,8 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 8000;
+const petsFile = './pets.json';
+
 require('locus');
 
 app.disable('x-powered-by');
@@ -42,16 +44,7 @@ app.route('/pets')
                 } else {
                     let pets = JSON.parse(data);
                     pets.push(newPet);
-                    let myData = JSON.stringify(pets);
-                    fs.writeFile('./pets.json', myData, (err) => {
-                        if (err) {
-                            next(err);
-                        } else {
-                            response.set('Content-Type', 'application/json');
-                            message = JSON.stringify(newPet);
-                            response.send(message);
-                        }
-                    })
+                    writeData(petsFile, pets, newPet, response);
                 }
             })
         }
@@ -86,13 +79,7 @@ app.route('/pets/:id')
                     return response.sendStatus(404);
                 }
                 const deletedPet = pets.splice(petId, 1);
-                fs.writeFile('./pets.json', JSON.stringify(pets), (err) => {
-                    if (err) {
-                        next(err);
-                    }
-                    response.set('Content-Type', 'application/json');
-                    response.send(deletedPet);
-                })
+                writeData(petsFile, pets, deletedPet, response);
             }
         })
 
@@ -120,15 +107,7 @@ app.route('/pets/:id')
                     currentPet.age = Number(petInfo.age);
                     currentPet.kind = petInfo.kind;
                     currentPet.name = petInfo.name;
-                    let myData = JSON.stringify(pets);
-                    fs.writeFile('./pets.json', myData, (err) => {
-                        if (err) {
-                            next(err);
-                        } else {
-                            response.set('Content-Type', 'application/json');
-                            response.send(currentPet);
-                        }
-                    })
+                    writeData(petsFile, pets, currentPet, response);
                 }
             })
         }
@@ -146,5 +125,16 @@ app.use(function (err, request, response, next) {
 app.listen(port, function () {
     console.log('Listening on port', port);
 });
+
+function writeData(file, data, responseData, response) {
+    fs.writeFile(file, JSON.stringify(data), (err) => {
+        if (err) {
+            next(err);
+        } else {
+            response.set('Content-Type', 'application/json');
+            response.send(responseData);
+        }
+    })
+}
 
 module.exports = app;
