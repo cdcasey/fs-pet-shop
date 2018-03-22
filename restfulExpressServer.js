@@ -69,11 +69,16 @@ app.route('/pets/:id')
                 if (petId < 0 || petId >= pets.length || Number.isNaN(petId)) {
                     return response.sendStatus(404);
                 }
-
                 response.set('Content-Type', 'application/json');
                 response.send(pets[petId]);
             }
         })
+    })
+    .delete((request, response, next) => {
+        response.sendStatus(501);
+    })
+    .patch((request, response, next) => {
+        response.sendStatus(501);
     })
 
 app.use(function (request, response) {
