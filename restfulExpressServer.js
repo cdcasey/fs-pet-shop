@@ -75,7 +75,27 @@ app.route('/pets/:id')
         })
     })
     .delete((request, response, next) => {
-        response.sendStatus(501);
+        const { headers, method, url } = request;
+        fs.readFile('./pets.json', 'utf8', (err, data) => {
+            if (err) {
+                next(err);
+            } else {
+                let pets = JSON.parse(data);
+                let petId = Number(request.params.id);
+                if (petId < 0 || petId >= pets.length || Number.isNaN(petId)) {
+                    return response.sendStatus(404);
+                }
+                const deletedPet = pets.splice(petId, 1);
+                fs.writeFile('./pets.json', JSON.stringify(pets), (err) => {
+                    if (err) {
+                        next(err);
+                    }
+                    response.set('Content-Type', 'application/json');
+                    response.send(deletedPet);
+                })
+            }
+        })
+
     })
     .patch((request, response, next) => {
         response.sendStatus(501);
