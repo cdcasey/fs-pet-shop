@@ -98,7 +98,40 @@ app.route('/pets/:id')
 
     })
     .patch((request, response, next) => {
-        response.sendStatus(501);
+        const { headers, method, url } = request;
+        const petInfo = request.body;
+        console.log(petInfo);
+        if (!petInfo.name || !petInfo.age || !petInfo.kind || isNaN(petInfo.age)) {
+            message = "New pet must have name, age, & kind attributes. Age must be a number.";
+            response.statusCode = 400;
+            response.set('Content-Type', 'text/plain');
+            response.send(message);
+        } else {
+            fs.readFile('./pets.json', (err, data) => {
+                if (err) {
+                    next(err);
+                } else {
+                    let pets = JSON.parse(data);
+                    let petId = Number(request.params.id);
+                    if (petId < 0 || petId >= pets.length || Number.isNaN(petId)) {
+                        return response.sendStatus(404);
+                    }
+                    let currentPet = pets[petId];
+                    currentPet.age = Number(petInfo.age);
+                    currentPet.kind = petInfo.kind;
+                    currentPet.name = petInfo.name;
+                    let myData = JSON.stringify(pets);
+                    fs.writeFile('./pets.json', myData, (err) => {
+                        if (err) {
+                            next(err);
+                        } else {
+                            response.set('Content-Type', 'application/json');
+                            response.send(currentPet);
+                        }
+                    })
+                }
+            })
+        }
     })
 
 app.use(function (request, response) {
