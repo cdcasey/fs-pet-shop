@@ -79,9 +79,9 @@ app.use(function (request, response) {
     response.status(404).send('Not Found');
 });
 
-app.listen(port, function () {
-    console.log('Listening on port', port);
-}); response.status(500).send('Something broke!')
+app.use(function (err, request, response, next) {
+    console.error(err.stack)
+    response.status(500).send('Something broke!')
 })
 
 app.listen(port, function () {
