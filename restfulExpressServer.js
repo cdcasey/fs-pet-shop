@@ -9,6 +9,8 @@ const port = process.env.PORT || 8000;
 
 app.disable('x-powered-by');
 
+app.use(morgan('combined'));
+
 app.route('/pets')
     .get((request, response, next) => {
         const { headers, method, url } = request;
@@ -75,7 +77,6 @@ app.route('/pets/:id')
             }
         })
     })
-
 
 app.use(function (request, response) {
     response.status(404).send('Not Found');
