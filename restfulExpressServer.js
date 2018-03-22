@@ -6,10 +6,13 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 8000;
+require('locus');
 
 app.disable('x-powered-by');
 
 app.use(morgan('combined'));
+
+app.use(bodyParser.json());
 
 app.route('/pets')
     .get((request, response, next) => {
@@ -25,38 +28,33 @@ app.route('/pets')
         })
     })
     .post((request, response, next) => {
-        let body = '';
-        request.on('data', (chunk) => {
-            body += chunk;
-        }).on('end', () => {
-            let message;
-            const newPet = JSON.parse(body);
-            if (!newPet.name || !newPet.age || !newPet.kind) {
-                message = "New pet must have name, age, & kind attributes.";
-                response.statusCode = 400;
-                response.set('Content-Type', 'text/plain');
-                response.send(message);
-            } else {
-                fs.readFile('./pets.json', (err, data) => {
-                    if (err) {
-                        next(err);
-                    } else {
-                        let pets = JSON.parse(data);
-                        pets.push(newPet);
-                        let myData = JSON.stringify(pets);
-                        fs.writeFile('./pets.json', myData, (err) => {
-                            if (err) {
-                                next(err);
-                            } else {
-                                response.set('Content-Type', 'application/json');
-                                message = JSON.stringify(newPet);
-                                response.send(message);
-                            }
-                        })
-                    }
-                })
-            }
-        })
+        let message;
+        const newPet = request.body;
+        if (!newPet.name || !newPet.age || !newPet.kind) {
+            message = "New pet must have name, age, & kind attributes.";
+            response.statusCode = 400;
+            response.set('Content-Type', 'text/plain');
+            response.send(message);
+        } else {
+            fs.readFile('./pets.json', (err, data) => {
+                if (err) {
+                    next(err);
+                } else {
+                    let pets = JSON.parse(data);
+                    pets.push(newPet);
+                    let myData = JSON.stringify(pets);
+                    fs.writeFile('./pets.json', myData, (err) => {
+                        if (err) {
+                            next(err);
+                        } else {
+                            response.set('Content-Type', 'application/json');
+                            message = JSON.stringify(newPet);
+                            response.send(message);
+                        }
+                    })
+                }
+            })
+        }
     })
 
 app.route('/pets/:id')
