@@ -81,4 +81,11 @@ app.use(function (request, response) {
 
 app.listen(port, function () {
     console.log('Listening on port', port);
+}); response.status(500).send('Something broke!')
+})
+
+app.listen(port, function () {
+    console.log('Listening on port', port);
 });
+
+module.exports = app;
