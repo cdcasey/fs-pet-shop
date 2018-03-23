@@ -72,7 +72,6 @@ describe('POST tests', () => {
 			.then((response) => {
 				request(app)
 					.get('/pets/2')
-					.set('Authorization', 'Basic YWRtaW46bWVvd21peA==')
 					.expect('Content-Type', /json/)
 					.expect(200, {
 						age: 3,
@@ -82,4 +81,16 @@ describe('POST tests', () => {
 			})
 			.catch(done);
 	});
+
+	it('should respond with a 400 status code for invalid data', (done) => {
+		request(app)
+		  .post('/pets')
+		  .send({
+			age: 'two',
+			kind: '',
+			name: ''
+		  })
+		  .expect('Content-type', /text\/plain/)
+		  .expect(400, 'New pet must have name, age, & kind attributes.', done);
+	  });
 });
