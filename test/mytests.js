@@ -59,7 +59,7 @@ describe('GET tests', () => {
 	});
 });
 
-// This doesn't touch pets.json. Should it?
+// TODO: remove added data
 describe('POST tests', () => {
 	it(`A POST call to /pets with a proper body should create a new pet entry`, (done) => {
 		request(app)
@@ -68,26 +68,18 @@ describe('POST tests', () => {
 			.send(JSON.stringify(newPet))
 			.expect(200)
 			.expect('Content-type', /json/)
-			.then(response => {
-				// console.log(newPet);
-				// assert(0, 1);
-				// expect(0).to.equal(1);
-				// expect(1).to.equal(0);
-
-				return expect(JSON.stringify(response.body[3])).to.equal(JSON.stringify(newPet));
-				// return done();
-			}, (err, _res) => {
-				if (err) {
-					return done(err);
-				}
-				else {
-					done();
-				}
+			.expect(JSON.stringify(newPet))
+			.then((response) => {
+				request(app)
+					.get('/pets/2')
+					.set('Authorization', 'Basic YWRtaW46bWVvd21peA==')
+					.expect('Content-Type', /json/)
+					.expect(200, {
+						age: 3,
+						kind: 'parakeet',
+						name: 'Cornflake'
+					}, done);
 			})
-			// .catch(err => {
-			// 	console.error(err);
-			// 	return expect(0).to.equal(1);
-			// 	// return done();
-			// });
+			.catch(done);
 	});
 });
